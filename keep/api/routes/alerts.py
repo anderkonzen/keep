@@ -46,6 +46,9 @@ def get_alerts(
                 extra={"provider_id": provider_id, "provider_type": provider_type},
             )
             pass
+
+    # add alerts that were created with Keep workflows
+
     return alerts
 
 

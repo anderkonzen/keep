@@ -95,4 +95,5 @@ class AlertManager:
                 )
                 raise
 
+        self.context_manager.dump()
         return alerts_errors

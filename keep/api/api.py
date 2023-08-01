@@ -7,7 +7,7 @@ from dotenv import find_dotenv, load_dotenv
 from fastapi import Depends, FastAPI, Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
-from starlette_context import plugins
+from starlette_context import context, plugins
 from starlette_context.middleware import RawContextMiddleware
 
 import keep.api.logging

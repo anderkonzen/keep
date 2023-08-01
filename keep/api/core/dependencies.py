@@ -6,6 +6,7 @@ import jwt
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
 from sqlmodel import Session, select
+from starlette_context import context
 
 from keep.api.core.db import get_session
 from keep.api.models.db.tenant import TenantApiKey
@@ -68,7 +69,9 @@ def verify_bearer_token(token: str = Depends(oauth2_scheme)) -> str:
             audience=auth_audience,
             issuer=issuer,
         )
-        return payload["keep_tenant_id"]
+        tenant_id = payload.get("keep_tenant_id")
+        context.data["tenant_id"] = tenant_id
+        return tenant_id
     except Exception as e:
         logger.exception("Failed to validate token")
         raise HTTPException(status_code=401, detail=str(e))
