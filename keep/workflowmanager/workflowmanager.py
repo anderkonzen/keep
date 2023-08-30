@@ -2,6 +2,7 @@ import logging
 import os
 import time
 import typing
+import uuid
 
 from keep.parser.parser import Parser
 from keep.providers.providers_factory import ProviderConfigurationException
@@ -112,7 +113,7 @@ class WorkflowManager:
                     )
 
     # TODO should be fixed to support the usual CLI
-    def run(self, workflows: list[Workflow]):
+    def run_from_cli(self, workflows: list[Workflow]):
         """
         Run list of workflows.
 
@@ -138,7 +139,7 @@ class WorkflowManager:
             self.logger.info("Workflow(s) scheduled")
         else:
             # running workflows in the regular mode
-            workflows_errors = self._run_workflows(workflows)
+            workflows_errors = self._run_workflows_from_cli(workflows)
 
         return workflows_errors
 
@@ -172,11 +173,12 @@ class WorkflowManager:
 
         return errors
 
-    def _run_workflows(self, workflows: typing.List[Workflow]):
+    def _run_workflows_from_cli(self, workflows: typing.List[Workflow]):
         workflows_errors = []
         for workflow in workflows:
             try:
-                errors = self._run_workflow(workflow)
+                workflow_execution_id = str(uuid.uuid4())
+                errors = self._run_workflow(workflow, workflow_execution_id)
                 workflows_errors.append(errors)
             except Exception as e:
                 self.logger.error(
