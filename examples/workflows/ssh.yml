@@ -50,8 +50,8 @@ providers:
   slack-prod:
     description: slack
     authentication:
-      webhook_url: https://hooks.slack.com/services/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
+      webhook_url: "WEBHOOK_URL"
   keep:
     description: keep
     authentication:
-      api_key: bdac2fab-f5f9-4abb-9081-6b575fce0bd7
+      api_key: "KEEP_API_KEY"
