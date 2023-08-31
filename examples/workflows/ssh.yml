@@ -1,0 +1,57 @@
+workflow:
+  id: new-alert-id
+  triggers:
+    - type: manual
+  description: make-git-great-again
+  steps:
+    - name: ssh-step
+      provider:
+        type: ssh
+        config: "{{ providers.makegit }}"
+        with:
+          command: whoami
+  actions:
+    - name: send-slack-message-if-failed-to-connect
+      condition:
+      - name: assert-condition
+        type: assert
+        assert: " 'player' not in {{ steps.ssh-step.results }}"
+        alias: A
+      provider:
+        type: slack
+        config: "{{ providers.slack-prod }}"
+        with:
+          message: "SSH Output: ({{ steps.ssh-step.results }})"
+      on_failure:
+        - name: send-error-message
+          provider:
+            type: slack
+            config: "{{ providers.slack-prod }}"
+            with:
+              message: "Failed to connect to the makegit server"
+    # If the alert triggers, send it to keep also
+    - name: send-to-keep
+      provider:
+        type: keep
+        config: "{{ providers.keep }}"
+        with:
+          message: "Alert triggered: {{ alert.name }}"
+          alert_name: "Not able to connect to makegit server"
+          severity: "critical"
+
+providers:
+  makegit:
+    description: makegitserver
+    authentication:
+      user: player
+      password: player
+      port: 12345
+      host: ctf.mrnice.dev
+  slack-prod:
+    description: slack
+    authentication:
+      webhook_url: https://hooks.slack.com/services/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
+  keep:
+    description: keep
+    authentication:
+      api_key: bdac2fab-f5f9-4abb-9081-6b575fce0bd7

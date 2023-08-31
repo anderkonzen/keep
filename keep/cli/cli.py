@@ -215,7 +215,7 @@ def run(
         tenant_id, alerts_directory or alert_url, providers_file
     )
     try:
-        workflow_manager.run(workflows)
+        workflow_manager.run_from_cli(workflows)
     except KeyboardInterrupt:
         logger.info("Keep stopped by user, stopping the scheduler")
         posthog_client.capture(

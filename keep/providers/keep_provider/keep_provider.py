@@ -1,7 +1,9 @@
 """
-PythonProvider is a class that implements the BaseOutputProvider.
+KeepProvider is a class that implements the BaseOutputProvider.
 """
+import dataclasses
 
+import pydantic
 
 from keep.contextmanager.contextmanager import ContextManager
 from keep.exceptions.provider_config_exception import ProviderConfigException
@@ -10,7 +12,20 @@ from keep.providers.base.base_provider import BaseProvider
 from keep.providers.models.provider_config import ProviderConfig
 
 
-class PythonProvider(BaseProvider):
+@pydantic.dataclasses.dataclass
+class KeepProviderAuthConfig:
+    """Keep authentication configuration."""
+
+    api_key: str = dataclasses.field(
+        metadata={
+            "required": True,
+            "description": "Keep Api Key",
+            "sensitive": True,
+        }
+    )
+
+
+class KeepProvider(BaseProvider):
     def __init__(
         self, context_manager: ContextManager, provider_id: str, config: ProviderConfig
     ):
@@ -21,28 +36,16 @@ class PythonProvider(BaseProvider):
         pass
 
     def _query(self, **kwargs):
-        """Python provider eval python code to get results
+        pass
+
+    def _notify(self, **kwargs):
+        """Keep provider - keep the output as alert
 
         Returns:
             _type_: _description_
         """
         code = kwargs.pop("code", "")
-        modules = kwargs.pop("imports", "")
-        loaded_modules = {}
-        for module in modules.split(","):
-            try:
-                loaded_modules[module] = __import__(module)
-            except Exception as e:
-                raise ProviderConfigException(
-                    f"{self.__class__.__name__} failed to import library: {module}",
-                    provider_id=self.provider_id,
-                )
-        parsed_code = self.io_handler.parse(code)
-        try:
-            output = eval(parsed_code, loaded_modules)
-        except Exception as e:
-            return {"status_code": "500", "output": str(e)}
-        return output
+        pass
 
     def dispose(self):
         """
